@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 
 public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ResponseProcessor {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -31,6 +31,8 @@ public class MainActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,10 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        textView = (TextView) findViewById(R.id.textView);
+
+        new DownloadMoviesTask(this).execute("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?limit=2&country=us&apikey=25tcgtm4r2cf2nsk3u5cp9z6");
     }
 
     @Override
@@ -104,6 +110,11 @@ public class MainActivity extends Activity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void processResponse(String response) {
+        textView.setText(response);
     }
 
     /**
