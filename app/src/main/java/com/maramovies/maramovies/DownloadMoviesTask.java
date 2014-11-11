@@ -3,6 +3,9 @@ package com.maramovies.maramovies;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,10 +19,10 @@ import java.net.URL;
  */
 public class DownloadMoviesTask extends AsyncTask<String, Void, String> {
 
-    private static final String DEBUG_TAG ="DEBUG" ;
+    private static final String DEBUG_TAG = "DEBUG";
     ResponseProcessor responseProcessor;
 
-    public  DownloadMoviesTask(ResponseProcessor responseProcessor){
+    public DownloadMoviesTask(ResponseProcessor responseProcessor) {
         this.responseProcessor = responseProcessor;
     }
 
@@ -47,7 +50,7 @@ public class DownloadMoviesTask extends AsyncTask<String, Void, String> {
         InputStream is = null;
         // Only display the first 500 characters of the retrieved
         // web page content.
-        int len = 500;
+        //  int len = 500;
 
         try {
             URL url = new URL(myurl);
@@ -61,9 +64,8 @@ public class DownloadMoviesTask extends AsyncTask<String, Void, String> {
             int response = conn.getResponseCode();
             Log.d(DEBUG_TAG, "The response is: " + response);
             is = conn.getInputStream();
-
             // Convert the InputStream into a string
-            String contentAsString = readIt(is, len);
+            String contentAsString = convertStreamToString(is);
             return contentAsString;
 
             // Makes sure that the InputStream is closed after the app is
@@ -76,11 +78,28 @@ public class DownloadMoviesTask extends AsyncTask<String, Void, String> {
     }
 
     // Reads an InputStream and converts it to a String.
-    public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-        Reader reader = null;
-        reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[len];
-        reader.read(buffer);
-        return new String(buffer);
+    public static String convertStreamToString(InputStream is) throws IOException {
+          /*
+           * To convert the InputStream to String we use the BufferedReader.readLine()
+           * method. We iterate until the BufferedReader return null which means
+           * there's no more data to read. Each line will appended to a StringBuilder
+           * and returned as String.
+           */
+        if (is != null) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            } finally {
+                is.close();
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
     }
 }

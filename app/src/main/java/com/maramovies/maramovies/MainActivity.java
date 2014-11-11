@@ -48,7 +48,7 @@ public class MainActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        textView = (TextView) findViewById(R.id.textView);
+        textView = (TextView) findViewById(R.id.editText);
 
         new DownloadMoviesTask(this).execute("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?limit=2&country=us&apikey=25tcgtm4r2cf2nsk3u5cp9z6");
     }
@@ -114,7 +114,7 @@ public class MainActivity extends Activity
 
     @Override
     public void processResponse(String response) {
-        textView.setText(response);
+        textView.setText(response.trim());
     }
 
     /**
